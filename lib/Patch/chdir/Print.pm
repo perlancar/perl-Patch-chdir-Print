@@ -12,7 +12,7 @@ sub import {
     my $caller = caller();
     *{"$caller\::chdir"} = sub {
         warn "chdir($_[0])";
-        CORE::GLOBAL::chdir(@_);
+        CORE::chdir(@_);
     };
 }
 
@@ -20,7 +20,10 @@ sub unimport {
     my $pkg = shift;
 
     my $caller = caller();
-    *{"$caller\::chdir"} = \&CORE::GLOBAL::chdir;
+    # XXX find a better way to restore original chdir
+    *{"$caller\::chdir"} = sub {
+        CORE::chdir(@_);
+    };
 }
 
 1;
